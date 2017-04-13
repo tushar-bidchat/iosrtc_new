@@ -23,7 +23,8 @@ class iosrtcPlugin : CDVPlugin {
 	// This is just called if <param name="onload" value="true" /> in plugin.xml.
 	override func pluginInitialize() {
 		NSLog("iosrtcPlugin#pluginInitialize()")
-
+                self.webView!.opaque = false
+		self.webView!.backgroundColor = UIColor.clearColor()
 		// Initialize DTLS stuff.
 		RTCPeerConnectionFactory.initializeSSL()
 
