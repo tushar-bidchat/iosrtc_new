@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import WebKit
 
 
 @objc(iosrtcPlugin) // This class must be accesible from Objective-C.
@@ -17,7 +18,7 @@ class iosrtcPlugin : CDVPlugin {
 	// PluginMediaStreamRenderer dictionary.
 	var pluginMediaStreamRenderers: [Int : PluginMediaStreamRenderer] = [:]
 	// Dispatch queue for serial operations.
-	let queue = dispatch_queue_create("cordova-plugin-iosrtc", DISPATCH_QUEUE_SERIAL)
+	var queue = dispatch_queue_create("cordova-plugin-iosrtc", DISPATCH_QUEUE_SERIAL)
 
 
 	// This is just called if <param name="onload" value="true" /> in plugin.xml.
@@ -25,6 +26,13 @@ class iosrtcPlugin : CDVPlugin {
 		NSLog("iosrtcPlugin#pluginInitialize()")
                 self.webView!.opaque = false
 		self.webView!.backgroundColor = UIColor.clearColor()
+        
+        self.pluginMediaStreams = [:]
+        self.pluginMediaStreamTracks = [:]
+        self.pluginMediaStreamRenderers = [:]
+        self.queue = dispatch_queue_create("cordova-plugin-iosrtc", DISPATCH_QUEUE_SERIAL)
+        self.pluginRTCPeerConnections = [:]
+
 		// Initialize DTLS stuff.
 		RTCPeerConnectionFactory.initializeSSL()
 
@@ -621,7 +629,7 @@ class iosrtcPlugin : CDVPlugin {
 		let id = command.argumentAtIndex(0) as! Int
 
 		let pluginMediaStreamRenderer = PluginMediaStreamRenderer(
-			webView: self.webView!,
+			webView: self.webView! as! WKWebView,
 			eventListener: { (data: NSDictionary) -> Void in
 				let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAsDictionary: data as [NSObject : AnyObject])
 
